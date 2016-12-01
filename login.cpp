@@ -19,6 +19,28 @@ void make_new_user_account(bool admin = false) {
 		getline(cin, username);
 	}
 
+	string read_username;
+	string read_password; // unused
+	string read_email; // unused
+
+	fstream pass_dat;
+	pass_dat.open("pass.dat", ios::in | ios::out);
+
+	bool match = false;
+	if (pass_dat.is_open()) {
+		while (!pass_dat.eof()) {
+			pass_dat >> read_username >> read_password >> read_email;
+			if (username == read_username) {
+				match = true;
+				break;
+			}
+		}
+	}
+	if (match) {
+		cerr << "Account already exists!" << endl;
+		return;
+	}
+
 	cout << "Enter " << username << "'s password : ";
 	getline(cin, password);
 
@@ -29,13 +51,15 @@ void make_new_user_account(bool admin = false) {
 		getline(cin, user_email);
 	}
 
-	fstream pass_dat;
-	pass_dat.open("pass.dat", ios::in | ios::out | ios::app);
-	
 	if (!pass_dat.is_open()) {
 		// pass.dat does not exist
 		pass_dat.close();
-		pass_dat.open("pass.dat", ios::in | ios::out | ios::trunc | ios::app);
+		pass_dat.open("pass.dat", ios::in | ios::out | ios::trunc);
+	} else {
+		// pass.dat exists, but at EOF state
+		pass_dat.clear();
+		pass_dat.seekg(0, ios::end);
+		pass_dat.seekp(0, ios::end);
 	}
 
 	/*
