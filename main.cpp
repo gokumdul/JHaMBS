@@ -1,9 +1,7 @@
-extern void login();
-extern void make_new_user_account(bool admin = false);
 #include <iostream>
 #include <fstream>
+#include "common.hpp"
 using namespace std;
-
 
 int main() {
 	fstream pass_dat;

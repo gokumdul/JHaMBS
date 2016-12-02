@@ -2,12 +2,10 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include "common.hpp"
 using namespace std;
 
-extern unsigned int calc_crc32(const char* contents);
-extern string caesar_cipher(string val, bool encrypt = true);
-
-void make_new_user_account(bool admin = false) {
+void make_new_user_account(bool admin) {
 	string username;
 	string password;
 	string user_email;

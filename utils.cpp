@@ -1,4 +1,5 @@
 #include <string>
+#include "common.hpp"
 using namespace std;
 
 unsigned int calc_crc32(const char* contents) {
@@ -20,7 +21,7 @@ unsigned int calc_crc32(const char* contents) {
 }
 
 #define CAESAR_SWIFT 50
-string caesar_cipher(string val, bool encrypt = true) {
+string caesar_cipher(string val, bool encrypt) {
 	// ASCII 032~126
 	string tmp(val);
 
