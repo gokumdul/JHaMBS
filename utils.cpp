@@ -2,6 +2,7 @@
 #include "common.hpp"
 using namespace std;
 
+// From http://www.hackersdelight.org/hdcodetxt/crc.c.txt
 unsigned int calc_crc32(const char* contents) {
 	int i = 0, j;
 	unsigned int byte, crc, mask;
