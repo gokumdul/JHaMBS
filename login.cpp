@@ -5,6 +5,9 @@
 #include "common.hpp"
 using namespace std;
 
+// account.dat file
+fstream account_file;
+
 void make_new_user_account(bool admin) {
 	string username;
 	string password;
@@ -118,4 +121,11 @@ void login() {
 	}
 
 	cout << "Login successful!" << endl;
+
+	// account_file is a global, static variable
+	account_file.open(username + ".dat", ios::in | ios::out);
+	if (!account_file.is_open()) {
+		// username.dat does not exist
+		account_file.open(username + ".dat", ios::in | ios::out | ios::trunc);
+	}
 }

@@ -5,6 +5,7 @@ using namespace std;
 // ++ From login.cpp
 void login();
 void make_new_user_account(bool admin = false);
+extern fstream account_file;
 // --
 
 // ++ From utils.cpp
