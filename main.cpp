@@ -29,7 +29,19 @@ int main() {
 		switch (index)
 		{
 		case 1:
-			login();
+			switch (login())
+			{
+			case LOGIN_ADMIN:
+				// admin_menu();
+				break;
+			case LOGIN_USER:
+				book_movie();
+				break;
+			case LOGIN_FAILED:
+			default:
+				// Do nothing
+				break;
+			}
 			break;
 		case 2:
 			make_new_user_account();
@@ -44,7 +56,6 @@ int main() {
 			break;
 		}
 	}
-
 
 	return 0;
 }

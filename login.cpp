@@ -76,7 +76,7 @@ void make_new_user_account(bool admin) {
 		<< (admin ? "null" : caesar_cipher(to_string(calc_crc32(user_email.c_str())))) << '\n';
 }
 
-void login() {
+LOGIN_STATUS login() {
 	fstream pass_dat;
 	pass_dat.open("pass.dat", ios::in | ios::out);
 
@@ -112,12 +112,12 @@ void login() {
 
 	if (!match) {
 		cerr << "No such username!" << endl;
-		return;
+		return LOGIN_FAILED;
 	}
 
 	if (password != caesar_cipher(read_password, false)) {
-		cout << "Wrong password!" << endl;
-		return;
+		cerr << "Wrong password!" << endl;
+		return LOGIN_FAILED;
 	}
 
 	cout << "Login successful!" << endl;
@@ -128,4 +128,6 @@ void login() {
 		// username.dat does not exist
 		account_file.open(username + ".dat", ios::in | ios::out | ios::trunc);
 	}
+
+	return (username == "admin" ? LOGIN_ADMIN : LOGIN_USER);
 }

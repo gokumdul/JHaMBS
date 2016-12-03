@@ -1,4 +1,8 @@
+#include <iostream>
 #include <string>
+#include <algorithm>
+#include <vector>
+#include <dirent.h>
 #include "common.hpp"
 using namespace std;
 
@@ -50,4 +54,44 @@ string caesar_cipher(string val, bool encrypt) {
 	}
 
 	return tmp;
+}
+
+bool string_starts_with(string orig, string cmp) {
+	if (orig.length() >= cmp.length()) {
+		return (0 == orig.compare(0, cmp.length(), cmp));
+	} else {
+		return false;
+	}
+}
+
+bool string_ends_with(string orig, string cmp) {
+	if (orig.length() >= cmp.length()) {
+		return (0 == orig.compare(orig.length() - cmp.length(), cmp.length(), cmp));
+	} else {
+		return false;
+	}
+}
+
+// From http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+vector<string> listdir(string path, string starts_with, string ends_with) {
+	DIR *dir;
+	struct dirent *ent;
+	vector<string> lists;
+
+	if ((dir = opendir(path.c_str())) != NULL) {
+		while ((ent = readdir(dir)) != NULL) {
+			string name(ent->d_name);
+
+			if (string_starts_with(name, starts_with) &&
+				string_ends_with(name, ends_with)) {
+				lists.push_back(name);
+			}
+		}
+		closedir(dir);
+		free(ent);
+	} else {
+		// Error
+	}
+
+	return lists;
 }

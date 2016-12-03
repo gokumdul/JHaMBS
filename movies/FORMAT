@@ -1,0 +1,7 @@
+ - Every criteria must be seperated with contents by " : "
+ - Each file must contain at least "Title" and "Run time" criteria
+ - Run time criteria must be in h/min format
+ - Supported extra screen types in Screens criteria is IMAX and 3D, separated with a comma(,)
+ - First line must start with the Title criteria "Title : "
+ - Second line must start with the Run time criteria "Run time : "
+ - Third line must start with the Screens criteria "Screens : " with at least 2D item
