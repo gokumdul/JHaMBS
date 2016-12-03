@@ -64,16 +64,21 @@ void make_new_user_account(bool admin) {
 	}
 
 	/*
-	 * Store username without encryption
-	 * Store password with Caesar's cipher
-	 * Store email with Caesar's cipher on top of crc32 hash
+	 * Username : Store without encryption
+	 * Password : Store with Caesar's cipher on top of crc32 hash
+	 *            so that the program itself cannot decrypt password
+	 *            2-stage is also used for the same reason as below
+	 * Email    : Brute-forcing email decryption is way too easy since '@'
+	 *            and commonly-used domains are always used,
+	 *            so store email with 2-stage Caesar's cipher
+	 *            with the username as the offset for the 2nd round
 	 *
 	 * Seperator : space
 	 */
 	pass_dat
 		<< username << ' '
-		<< caesar_cipher(password) << ' '
-		<< (admin ? "null" : caesar_cipher(to_string(calc_crc32(user_email.c_str())))) << '\n';
+		<< caesar_cipher(to_string(calc_crc32(password.c_str())), username) << ' '
+		<< (admin ? "null" : caesar_cipher(user_email.c_str(), username)) << '\n';
 }
 
 LOGIN_STATUS login() {
@@ -115,7 +120,8 @@ LOGIN_STATUS login() {
 		return LOGIN_FAILED;
 	}
 
-	if (password != caesar_cipher(read_password, false)) {
+	if (to_string(calc_crc32(password.c_str())) !=
+		caesar_cipher(read_password, username, false)) {
 		cerr << "Wrong password!" << endl;
 		return LOGIN_FAILED;
 	}

@@ -18,6 +18,8 @@ void book_movie();
 // ++ From utils.cpp
 unsigned int calc_crc32(const char* contents);
 string caesar_cipher(string val, bool encrypt = true);
+string caesar_cipher(string val, string offset, bool encrypt = true);
+extern inline char caesar_cipher(char val, bool encrypt = true, int offset = 0);
 bool string_starts_with(string orig, string cmp);
 bool string_ends_with(string orig, string cmp);
 vector<string> listdir(string path, string starts_with, string ends_with);

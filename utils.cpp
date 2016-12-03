@@ -26,34 +26,52 @@ unsigned int calc_crc32(const char* contents) {
 }
 
 #define CAESAR_SWIFT 50
+// Regular Caesar's cipher encryption
 string caesar_cipher(string val, bool encrypt) {
-	// ASCII 032~126
 	string tmp(val);
 
-	for (int i = 0; i < tmp.size(); i++) {
-		if (32 <= tmp[i] && tmp[i] <= 126) {
-			tmp[i] = (char)
-				(
-					(
-						(int)tmp[i] +
-							// if cipher  : +CAESAR_SWIFT
-							// if !cipher : -CAESAR_SWIFT, 95 is added to prevent underflow
-							(encrypt ? (CAESAR_SWIFT) : (95 - CAESAR_SWIFT))
-						// Subtract 32 now to calculate the remainder correctly
-						- 32)
-					// Remainder(%) is used to limit the character within the 0~94 range
-					% 95
-					// Add 32 now as we subtracted it earlier
-					// (Change the range from 0~94 to 32~126)
-					+ 32
-				);
-		} else {
-			// Skip de/encrypting character not representable with ASCII
-			// cerr << tmp[i] << " : character not representable with ASCII!" << endl;
-		}
-	}
+	for (int i = 0; i < tmp.size(); i++)
+		tmp[i] = caesar_cipher(tmp[i], encrypt, 0);
 
 	return tmp;
+}
+
+// 2-stage Caesar's cipher encryption with the offset for the 2nd round
+string caesar_cipher(string val, string offset, bool encrypt) {
+	string tmp(val);
+
+	for (int i = 0; i < tmp.size(); i++)
+		tmp[i] = caesar_cipher(tmp[i], encrypt, (int)offset[i % offset.size()]);
+
+	return tmp;
+}
+
+// Single character Caesar's cipher encryption
+// Use inlining for faster execution when used on a loop
+inline char caesar_cipher(char val, bool encrypt, int offset) {
+	// ASCII 032~126
+	if (32 <= val && val <= 126) {
+		val = (char)
+			(
+				(
+					(int)val +
+						// if encrypt  : +(CAESAR_SWIFT+offset)
+						// if !encrypt : -(CAESAR_SWIFT+offset), 95 is added to prevent underflow
+						(encrypt ? (CAESAR_SWIFT + offset) : (95 - (CAESAR_SWIFT + offset)))
+					// Subtract 32 now to calculate the remainder correctly
+					- 32)
+				// Remainder(%) is used to limit the character within the 0~94 range
+				% 95
+				// Add 32 now as we subtracted it earlier
+				// (Change the range from 0~94 to 32~126)
+				+ 32
+			);
+	} else {
+		// Skip de/encrypting character not representable with ASCII
+		// cerr << val << " : character not representable with ASCII!" << endl;
+	}
+
+	return val;
 }
 
 bool string_starts_with(string orig, string cmp) {
