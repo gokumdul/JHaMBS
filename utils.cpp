@@ -115,3 +115,103 @@ vector<string> listdir(string path, string starts_with, string ends_with) {
 
 	return lists;
 }
+
+int count_digits(int val) {
+	int ret = 0;
+
+	if (val < 0)
+		val *= -1;
+
+	do {
+		val /= 10;
+		ret++;
+	} while (val);
+
+	return ret;
+}
+
+/*
+ * Usage :
+ * string menu[] = { "Login", "New account", "Find password", "Quit" };
+ * print_menu("Start", menu, sizeof(menu) / sizeof(string));
+ *
+ * The 4th argument width is optional, default is 60.
+ * The return value is the user's choice.
+ */
+int print_menu(const string title, const string strings[], const int size, const bool prompt, const int width) {
+	// Calculate space for center-aligning title
+	bool title_is_even = (title.size() % 2 == 0);
+	int title_left_margin  = width / 2 - title.size() / 2 - 1 - !title_is_even;
+	int title_right_margin = width / 2 - title.size() / 2 - 1;
+
+	// Print title
+	cout << "┌";
+	for (int i = 1; i < title_left_margin; i++)
+		cout << "─";
+	cout << ' ';
+	cout << title;
+	cout << ' ';
+	for (int i = 1; i < title_right_margin; i++)
+		cout << "─";
+	cout << "┐";
+	cout << endl;
+
+	// Print the middle space
+	cout << "│";
+	for (int i = 1; i < width - 1; i++)
+		cout << ' ';
+	cout << "│";
+	cout << endl;
+
+	// Calculate space for center-aligning all items
+	int largest = 0;
+	for (int i = 0; i < size; i++) {
+		if (strings[i].size() > largest)
+			largest = strings[i].size();
+	}
+	if (prompt)
+		largest += count_digits(size) + 2; // 2 : ". "
+
+	// Print items
+	int number = 0;
+	for (int i = 0; i < size; i++) {
+		int j, k;
+		cout << "│";
+		for (j = 0; j < width / 2 - largest / 2 - 1; j++)
+			cout << ' ';
+		if (prompt)
+			cout << ++number << ". ";
+		cout << strings[i];
+		for (k = 0; k < width - 2 - j - (prompt ? 3 : 0) - strings[i].size(); k++)
+			cout << ' ';
+		cout << "│";
+		cout << endl;
+	}
+
+	// Print the middle space
+	cout << "│";
+	for (int i = 1; i < width - 1; i++)
+		cout << ' ';
+	cout << "│";
+	cout << endl;
+
+	// Print the last line
+	cout << "└";
+	for (int i = 1; i < width - 1; i++)
+		cout << "─";
+	cout << "┘";
+	cout << endl;
+
+	if (prompt) {
+		// Now ask the user
+		int choice;
+		cout << "Please choose : ";
+		cin >> choice;
+
+		// Clear the buffer for next getline()
+		cin.ignore();
+
+		return choice;
+	}
+	return 0;
+}
