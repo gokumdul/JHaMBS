@@ -77,7 +77,7 @@ void make_new_user_account(bool admin) {
 	 */
 	pass_dat
 		<< username << ' '
-		<< caesar_cipher(to_string(calc_crc32(password.c_str())), username) << ' '
+		<< caesar_cipher(to_string(calc_crc32(password.c_str())), username, true, 80) << ' '
 		<< (admin ? "null" : caesar_cipher(user_email.c_str(), username)) << '\n';
 }
 
@@ -121,7 +121,7 @@ LOGIN_STATUS login() {
 	}
 
 	if (to_string(calc_crc32(password.c_str())) !=
-		caesar_cipher(read_password, username, false)) {
+		caesar_cipher(read_password, username, false, 80)) {
 		cerr << "Wrong password!" << endl;
 		return LOGIN_FAILED;
 	}
