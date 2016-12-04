@@ -202,16 +202,21 @@ int print_menu(const string title, const string strings[], const int size, const
 	cout << "┘";
 	cout << endl;
 
+	int choice = 0;
 	if (prompt) {
-		// Now ask the user
-		int choice;
-		cout << "Please choose : ";
-		cin >> choice;
+		while (1) {
+			// Now ask the user
+			cout << "Please choose : ";
+			cin >> choice;
 
-		// Clear the buffer for next getline()
-		cin.ignore();
+			// Clear the buffer for next getline()
+			cin.ignore();
 
-		return choice;
+			if (1 <= choice && choice <= number)
+				return choice;
+			else
+				cerr << "Please enter a valid value!" << endl;
+		}
 	}
 	return 0;
 }
