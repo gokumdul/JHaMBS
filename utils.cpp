@@ -25,39 +25,38 @@ unsigned int calc_crc32(const char* contents) {
 	return crc;
 }
 
-#define CAESAR_SWIFT 50
 // Regular Caesar's cipher encryption
-string caesar_cipher(string val, bool encrypt) {
+string caesar_cipher(string val, bool encrypt, unsigned int swift) {
 	string tmp(val);
 
 	for (int i = 0; i < tmp.size(); i++)
-		tmp[i] = caesar_cipher(tmp[i], encrypt, 0);
+		tmp[i] = caesar_cipher(tmp[i], encrypt, swift);
 
 	return tmp;
 }
 
 // 2-stage Caesar's cipher encryption with the offset for the 2nd round
-string caesar_cipher(string val, string offset, bool encrypt) {
+string caesar_cipher(string val, string offset, bool encrypt, unsigned int swift) {
 	string tmp(val);
 
 	for (int i = 0; i < tmp.size(); i++)
-		tmp[i] = caesar_cipher(tmp[i], encrypt, (int)offset[i % offset.size()]);
+		tmp[i] = caesar_cipher(tmp[i], encrypt, (unsigned int)offset[i % offset.size()] + swift);
 
 	return tmp;
 }
 
 // Single character Caesar's cipher encryption
 // Use inlining for faster execution when used on a loop
-inline char caesar_cipher(char val, bool encrypt, int offset) {
+inline char caesar_cipher(char val, bool encrypt, unsigned int offset) {
 	// ASCII 032~126
 	if (32 <= val && val <= 126) {
 		val = (char)
 			(
 				(
 					(int)val +
-						// if encrypt  : +(CAESAR_SWIFT+offset)
-						// if !encrypt : -(CAESAR_SWIFT+offset), 95 is added to prevent underflow
-						(encrypt ? (CAESAR_SWIFT + offset) : (95 - (CAESAR_SWIFT + offset)))
+						// if encrypt  : +offset
+						// if !encrypt : -offset, 95 is added to prevent underflow
+						(encrypt ? offset : (95 - offset))
 					// Subtract 32 now to calculate the remainder correctly
 					- 32)
 				// Remainder(%) is used to limit the character within the 0~94 range
