@@ -48,6 +48,9 @@ string caesar_cipher(string val, string offset, bool encrypt, unsigned int swift
 // Single character Caesar's cipher encryption
 // Use inlining for faster execution when used on a loop
 inline char caesar_cipher(char val, bool encrypt, unsigned int offset) {
+	// Reset offset within the valid range
+	offset %= 95;
+
 	// ASCII 032~126
 	if (32 <= val && val <= 126) {
 		val = (char)
