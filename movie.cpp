@@ -73,27 +73,27 @@ void book_movie() {
 
     vector<movie> movie_vec;
     vector<movie>::iterator it_movie;
-    int movies = 0;
-    int user_choice;
-
-    cout << "Please choose a movie" << endl;
 
     for (it_string = movie_dats.begin(); it_string != movie_dats.end(); it_string++)
         movie_vec.push_back(movie("movies/" + *it_string));
 
+    string* movies_array = new string[movie_vec.size()];
+    int i = 0;
     for (it_movie = movie_vec.begin(); it_movie != movie_vec.end(); it_movie++) {
-        cout << ++movies << " : " << it_movie->get_title() << endl;
+        movies_array[i++] = it_movie->get_title();
     }
 
-    cin >> user_choice;
-
+    int user_choice = print_menu("Movies now playing", movies_array, i);
     ifstream movie_dat;
     movie_dat.open("movies/" + *((it_string = movie_dats.begin()) + user_choice - 1));
-    string line;
-    cout << "< Movie details >" << endl;
-    while (getline(movie_dat, line)) {
-        cout << line << endl;
-    }
+
+    int lines = count(istreambuf_iterator<char>(movie_dat), istreambuf_iterator<char>(), '\n');
+    movie_dat.seekg(0, ios::beg);
+
+    string* strings = new string[lines];
+    for (int i = 0; getline(movie_dat >> ws, strings[i]); i++); // ws : absorb whitespace
+
+    print_menu("Movie details", strings, lines, false);
 
     // TODO : Actually book a movie
     exit(0);

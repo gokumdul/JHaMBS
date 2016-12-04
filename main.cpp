@@ -12,21 +12,10 @@ int main() {
 		make_new_user_account(true);
 	}
 
-	int index;
+	string menu[] = { "Login", "New account", "Find password", "Quit" };
 
 	while(1) {
-		cout << "1. Login" << endl
-			<< "2. New account" << endl
-			<< "3. Find password" << endl
-			<< "4. Quit" << endl;
-
-		cout << "What do you want to do? : ";
-		cin >> index;
-
-		// Clear the buffer for next getline()
-		cin.ignore();
-
-		switch (index)
+		switch (print_menu("Start", menu, sizeof(menu) / sizeof(string)))
 		{
 		case 1:
 			switch (login())
