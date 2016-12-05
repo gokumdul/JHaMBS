@@ -29,8 +29,7 @@ void make_new_user_account(bool admin) {
 
 	bool match = false;
 	if (pass_dat.is_open()) {
-		while (!pass_dat.eof()) {
-			pass_dat >> read_username >> read_password >> read_email;
+		while (pass_dat >> read_username >> read_password >> read_email) {
 			if (username == read_username) {
 				match = true;
 				break;
@@ -107,8 +106,7 @@ LOGIN_STATUS login() {
 	pass_dat.open("pass.dat", ios::in | ios::out);
 
 	bool match = false;
-	while (!pass_dat.eof()) {
-		pass_dat >> read_username >> read_password >> read_email;
+	while (pass_dat >> read_username >> read_password >> read_email) {
 		if (username == read_username) {
 			match = true;
 			break;
