@@ -11,6 +11,10 @@ void make_new_user_account(bool admin = false);
 extern fstream account_file;
 // --
 
+// ++ From admin.cpp
+void admin_menu();
+// --
+
 // ++ From movie.cpp
 void book_movie();
 // --

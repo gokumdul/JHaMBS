@@ -23,7 +23,7 @@ int main() {
 			switch (login())
 			{
 			case LOGIN_ADMIN:
-				// admin_menu();
+				admin_menu();
 				break;
 			case LOGIN_USER:
 				book_movie();
