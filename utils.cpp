@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <iterator>
 #include <dirent.h>
 #include "common.hpp"
 using namespace std;
