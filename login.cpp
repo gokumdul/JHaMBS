@@ -78,15 +78,19 @@ void make_new_user_account(bool admin) {
 		<< username << ' '
 		<< caesar_cipher(to_string(calc_crc32(password.c_str())), username, true, 80) << ' '
 		<< (admin ? "null" : caesar_cipher(user_email.c_str(), username)) << '\n';
+
+	pass_dat.close();
 }
 
 LOGIN_STATUS login() {
-	fstream pass_dat;
-	pass_dat.open("pass.dat", ios::in | ios::out);
+	ifstream pass_dat;
+	pass_dat.open("pass.dat");
 
 	if (!pass_dat.is_open()) {
 		// pass.dat does not exist
 		make_new_user_account(true);
+	} else {
+		pass_dat.close();
 	}
 
 	string username;
@@ -101,9 +105,8 @@ LOGIN_STATUS login() {
 	cout << "Password : ";
 	getline(cin, password);
 
-	// Close and reopen
-	pass_dat.close();
-	pass_dat.open("pass.dat", ios::in | ios::out);
+	// Previously closed; reopen
+	pass_dat.open("pass.dat");
 
 	bool match = false;
 	while (pass_dat >> read_username >> read_password >> read_email) {
@@ -112,6 +115,9 @@ LOGIN_STATUS login() {
 			break;
 		}
 	}
+
+	// No longer used; so close
+	pass_dat.close();
 
 	if (!match) {
 		cerr << "No such username!" << endl;

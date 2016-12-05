@@ -4,12 +4,14 @@
 using namespace std;
 
 int main() {
-	fstream pass_dat;
-	pass_dat.open("pass.dat", ios::in | ios::out);
+	ifstream pass_dat;
+	pass_dat.open("pass.dat");
 
 	if (!pass_dat.is_open()) {
 		// pass.dat does not exist
 		make_new_user_account(true);
+	} else {
+		pass_dat.close();
 	}
 
 	string menu[] = { "Login", "New account", "Find password", "Quit" };

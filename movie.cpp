@@ -93,6 +93,9 @@ void book_movie() {
 	string* strings = new string[lines];
 	for (int i = 0; getline(movie_dat >> ws, strings[i]); i++); // ws : absorb whitespace
 
+	// No longer used
+	movie_dat.close();
+
 	print_menu("Movie details", strings, lines, false);
 
 	// TODO : Actually book a movie
