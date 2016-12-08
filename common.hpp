@@ -31,9 +31,9 @@ int count_digits(int val);
 int print_menu(const string title, const string strings[], const int size, const bool prompt = true, const int width = 60);
 // template functions cannot be linked together, so put it in header
 // T vector to T array
-template<typename T>T* vtoa(vector<T> vec) {
+template<typename T>T* vtoa(vector<T> vec, int reserve = 0) {
 	typename vector<T>::iterator it;
-	T* array = new T[vec.size()];
+	T* array = new T[vec.size() + reserve];
 
 	int i = 0;
 	for (it = vec.begin(); it != vec.end(); it++)

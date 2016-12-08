@@ -13,68 +13,76 @@ static void user_management();
 static int show_user_list(bool ret, bool email);
 
 void admin_menu() {
-	string initial_admin_menu[] = { "Schedule management", "User management" };
-	switch (print_menu("Admin menu", initial_admin_menu, sizeof(initial_admin_menu) / sizeof(string))) {
-	case 1:
-		// TODO : implement schedule management
-		break;
-	case 2:
-		user_management();
-		break;
+	while(1) {
+		string initial_admin_menu[] = { "Schedule management", "User management", "Go back" };
+		switch (print_menu("Admin menu", initial_admin_menu, sizeof(initial_admin_menu) / sizeof(string))) {
+		case 1:
+			// TODO : implement schedule management
+			break;
+		case 2:
+			user_management();
+			break;
+		case 3:
+			return;
+		}
 	}
 }
 
 static void user_management() {
-	string user_management_menu[] = { "Set authority", "Show user list", "Delete user" };
+	string user_management_menu[] = { "Set authority", "Show user list", "Delete user", "Go back" };
+	while(1) {
 	switch (print_menu("User management", user_management_menu, sizeof(user_management_menu) / sizeof(string))) {
-	case 1:
-		// TODO : implement admin/user switch
-		break;
-	case 2:
-		show_user_list(false, true);
-		break;
-	case 3:
-	{ // Limit new declarations within the scope
-		int del = show_user_list(true, false);
-		if (!del)
+		case 1:
+			// TODO : implement admin/user switch
 			break;
+		case 2:
+			show_user_list(false, true);
+			break;
+		case 3:
+		{ // Limit new declarations within the scope
+			int del = show_user_list(true, false);
+			if (!del)
+				break;
 
-		// Create a temporary file excluding the line to remove
-		fstream tmp_file;
-		tmp_file.open("tmp_pass.dat", ios::in | ios::out | ios::trunc);
+			// Create a temporary file excluding the line to remove
+			fstream tmp_file;
+			tmp_file.open("tmp_pass.dat", ios::in | ios::out | ios::trunc);
 
-		ifstream pass_dat;
-		pass_dat.open("pass.dat");
+			ifstream pass_dat;
+			pass_dat.open("pass.dat");
 
-		int i = 1;
-		string tmp;
-		string username;
+			int i = 1;
+			string tmp;
+			string username;
 
-		// Copy the contents excluding the line to remove
-		while (getline(pass_dat, tmp)) {
-			if (i++ == del) {
-				username = tmp.substr(0, tmp.find(" "));
-				continue;
+			// Copy the contents excluding the line to remove
+			while (getline(pass_dat, tmp)) {
+				if (i++ == del) {
+					username = tmp.substr(0, tmp.find(" "));
+					continue;
+				}
+				tmp_file << tmp << endl;
 			}
-			tmp_file << tmp << endl;
+
+			pass_dat.close();
+			tmp_file.close();
+
+			// Close global account_file fstream, if opened
+			if (account_file && account_file.is_open())
+				account_file.close();
+
+			// Remove user data
+			remove(string(username + ".dat").c_str());
+
+			// Rename tmp_pass.dat to pass.dat
+			remove("pass.dat");
+			rename("tmp_pass.dat", "pass.dat");
+
+			break;
 		}
-
-		pass_dat.close();
-		tmp_file.close();
-
-		// Close global account_file fstream, if opened
-		if (account_file && account_file.is_open())
-			account_file.close();
-
-		// Remove user data
-		remove(string(username + ".dat").c_str());
-
-		// Rename tmp_pass.dat to pass.dat
-		remove("pass.dat");
-		rename("tmp_pass.dat", "pass.dat");
-
-		break;
-	}
+		case 4:
+			return;
+		}
 	}
 }
 
@@ -109,8 +117,10 @@ static int show_user_list(bool ret, bool email) {
 		return 0;
 	}
 
-	string* list = vtoa(vec);
-	int retval = print_menu("User list", list, size, ret);
+	string* list = vtoa(vec, ret);
+	if (ret)
+		list[size] = "Go back";
+	int retval = print_menu("User list", list, size + ret, ret);
 	// Free the pointer
 	free(list);
 

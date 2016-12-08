@@ -77,13 +77,17 @@ void book_movie() {
 	for (it_string = movie_dats.begin(); it_string != movie_dats.end(); it_string++)
 		movie_vec.push_back(movie("movies/" + *it_string));
 
-	string* movies_array = new string[movie_vec.size()];
+	string* movies_array = new string[movie_vec.size() + 1];
 	int i = 0;
 	for (it_movie = movie_vec.begin(); it_movie != movie_vec.end(); it_movie++) {
 		movies_array[i++] = it_movie->get_title();
 	}
+	movies_array[i++] = "Go back";
 
 	int user_choice = print_menu("Movies now playing", movies_array, i);
+	if (user_choice == i)
+		return;
+
 	ifstream movie_dat;
 	movie_dat.open("movies/" + *((it_string = movie_dats.begin()) + user_choice - 1));
 
