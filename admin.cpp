@@ -33,8 +33,31 @@ static void user_management() {
 	while(1) {
 	switch (print_menu("User management", user_management_menu, sizeof(user_management_menu) / sizeof(string))) {
 		case 1:
-			// TODO : implement admin/user switch
+		{ // Limit new declarations within the scope
+			int to_switch = show_user_list(true, false);
+			if (!to_switch)
+				break;
+
+			ifstream pass_dat;
+			pass_dat.open("pass.dat");
+
+			// to_switch here counts after the admin account, so it's (to_switch), not (to_switch - 1)
+			pass_dat.seekg(sizeof(account) * to_switch);
+
+			account user;
+			pass_dat.read(reinterpret_cast<char *>(&user), sizeof(account));
+			pass_dat.close();
+
+			cout << "Changing " << user.get_username()
+			     << " from " <<  (user.is_admin() ? "admin" : "regular user")
+			     << " to "   << (!user.is_admin() ? "admin" : "regular user")
+			     << endl;
+
+			user.set_admin(!user.is_admin());
+			user.save_to_pass_dat();
+
 			break;
+		}
 		case 2:
 			show_user_list(false, true);
 			break;
