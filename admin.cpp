@@ -112,5 +112,9 @@ static int show_user_list(bool ret, bool email) {
 	// Free the pointer
 	delete[] list;
 
+	// Check if retval is "Go back"
+	if (ret && retval == size + 1)
+		retval = 0;
+
 	return retval;
 }
