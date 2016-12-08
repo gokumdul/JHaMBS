@@ -60,7 +60,37 @@ void account::set_password(string password) {
 		);
 }
 void account::pw_recovery() {
-	// TODO : implement
+	string email;
+
+	cout << "Type user's email to reset password : ";
+	getline(cin, email);
+
+	if (email != get_email()) {
+		cerr << "Incorrect email address!" << endl;
+		return;
+	}
+
+	string pw1; // First  entry
+	string pw2; // Second entry
+
+	do {
+		cout << "Enter your new password : ";
+		getline(cin, pw1);
+
+		cout << "Re-enter your new password : ";
+		getline(cin, pw2);
+
+		if (pw1 == pw2)
+			break;
+
+		cerr << "Password mismatches!" << endl
+		     << "Please try again!" << endl << endl;
+	} while (1);
+
+	set_password(pw1);
+	this->save_to_pass_dat();
+
+	cout << "Password updated!" << endl;
 }
 void account::save_to_pass_dat() const {
 	fstream pass_dat;
@@ -217,4 +247,40 @@ LOGIN_STATUS login() {
 	delete user;
 
 	return retval;
+}
+
+// Real password recovery is done within the class(account::pw_recovery())
+void reset_password() {
+	ifstream pass_dat;
+	pass_dat.open("pass.dat");
+
+	if (!pass_dat.is_open()) {
+		// pass.dat does not exist
+		cerr << "No user data available!" << endl;
+		return;
+	} else {
+		pass_dat.close();
+	}
+
+	string username;
+	string email;
+
+	cout << "Username : ";
+	getline(cin, username);
+
+	account *user = new account();
+	if (!account::exists_in_pass_dat(username, true, user)) {
+		cerr << "No such username!" << endl;
+		if (user)
+			delete user;
+		return;
+	}
+
+	if (user->is_admin()) {
+		cerr << "Administrator's password is not allowed to be recovered!" << endl;
+		return;
+	}
+
+	user->pw_recovery();
+	delete user;
 }

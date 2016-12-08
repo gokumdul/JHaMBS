@@ -9,6 +9,7 @@ enum LOGIN_STATUS { LOGIN_FAILED, LOGIN_ADMIN, LOGIN_USER };
 // ++ From account.cpp
 LOGIN_STATUS login();
 void make_new_user_account(bool admin = false);
+void reset_password();
 extern fstream account_file;
 // --
 

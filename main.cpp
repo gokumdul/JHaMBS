@@ -37,9 +37,9 @@ int main() {
 		case 2:
 			make_new_user_account();
 			break;
-		/*case 3:
-			find_password();
-			break;*/
+		case 3:
+			reset_password();
+			break;
 		case 4:
 			// Trigger garbage collection in pass.dat
 			account::gc();
