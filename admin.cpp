@@ -44,39 +44,21 @@ static void user_management() {
 			if (!del)
 				break;
 
-			// Create a temporary file excluding the line to remove
-			fstream tmp_file;
-			tmp_file.open("tmp_pass.dat", ios::in | ios::out | ios::trunc);
+			// Replace the account data in pass.dat with empty characters
+			fstream pass_dat;
+			pass_dat.open("pass.dat", ios::in | ios::out);
 
-			ifstream pass_dat;
-			pass_dat.open("pass.dat");
+			// Move the pointer in front of the data to delete
+			// del here counts after the admin account, so it's (del), not (del - 1)
+			pass_dat.seekp(sizeof(account) * del);
 
-			int i = 1;
-			string tmp;
-			string username;
+			// Create an empty character array
+			char empty[sizeof(account)] = "";
 
-			// Copy the contents excluding the line to remove
-			while (getline(pass_dat, tmp)) {
-				if (i++ == del) {
-					username = tmp.substr(0, tmp.find(" "));
-					continue;
-				}
-				tmp_file << tmp << endl;
-			}
+			// Use it to wipe the data
+			pass_dat.write(empty, sizeof(account));
 
 			pass_dat.close();
-			tmp_file.close();
-
-			// Close global account_file fstream, if opened
-			if (account_file && account_file.is_open())
-				account_file.close();
-
-			// Remove user data
-			remove(string(username + ".dat").c_str());
-
-			// Rename tmp_pass.dat to pass.dat
-			remove("pass.dat");
-			rename("tmp_pass.dat", "pass.dat");
 
 			break;
 		}
@@ -88,23 +70,28 @@ static void user_management() {
 
 static int show_user_list(bool ret, bool email) {
 	vector<string> vec;
-
-	string read_username;
-	string read_password; // unused
-	string read_email;
-
 	ifstream pass_dat;
-	pass_dat.open("pass.dat");
 	int size = 0;
 
+	// TODO : Empty data within pass.dat cause issue when ret is true
+
+	pass_dat.open("pass.dat");
 	if (pass_dat.is_open()) {
 		string tmp;
-		while (pass_dat >> read_username >> read_password >> read_email) {
+		account user;
+		while (pass_dat.read(reinterpret_cast<char *>(&user), sizeof(account))) {
+			tmp = user.get_username();
+
 			size++;
-			tmp = read_username;
-			if (email && read_email != "null")
-				tmp += " - " + caesar_cipher(read_email.c_str(), read_username, false);
-			if (!(ret && read_username == "admin"))
+			if (email && user.get_email() != "null")
+				tmp += " - " + user.get_email();
+
+			/*
+			 * Do not use user.is_admin() here as
+			 * multiple users can have administrator permissions.
+			 * We don't want the "admin" user to be deleted
+			 */
+			if (!(ret && user.get_username() == "admin"))
 				vec.push_back(tmp);
 			else
 				size--;
@@ -122,7 +109,7 @@ static int show_user_list(bool ret, bool email) {
 		list[size] = "Go back";
 	int retval = print_menu("User list", list, size + ret, ret);
 	// Free the pointer
-	free(list);
+	delete[] list;
 
 	return retval;
 }

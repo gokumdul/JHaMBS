@@ -26,22 +26,14 @@ unsigned int calc_crc32(const char* contents) {
 	return crc;
 }
 
-// Regular Caesar's cipher encryption
-string caesar_cipher(string val, bool encrypt, unsigned int swift) {
-	string tmp(val);
-
-	for (int i = 0; i < tmp.size(); i++)
-		tmp[i] = caesar_cipher(tmp[i], encrypt, swift);
-
-	return tmp;
-}
-
-// 2-stage Caesar's cipher encryption with the offset for the 2nd round
+// Caesar's cipher encryption
 string caesar_cipher(string val, string offset, bool encrypt, unsigned int swift) {
+	bool offset_empty = offset.empty(); // Cache offset.empty()
 	string tmp(val);
 
 	for (int i = 0; i < tmp.size(); i++)
-		tmp[i] = caesar_cipher(tmp[i], encrypt, (unsigned int)offset[i % offset.size()] + swift);
+		tmp[i] = caesar_cipher(tmp[i], encrypt,
+			offset_empty ? 0 : (unsigned int)offset[i % offset.size()] + swift);
 
 	return tmp;
 }

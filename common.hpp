@@ -1,6 +1,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include "account.hpp"
 using namespace std;
 
 enum LOGIN_STATUS { LOGIN_FAILED, LOGIN_ADMIN, LOGIN_USER };
@@ -21,8 +22,7 @@ void book_movie();
 
 // ++ From utils.cpp
 unsigned int calc_crc32(const char* contents);
-string caesar_cipher(string val, bool encrypt = true, unsigned int swift = 50);
-string caesar_cipher(string val, string offset, bool encrypt = true, unsigned int swift = 50);
+string caesar_cipher(string val, string offset = "", bool encrypt = true, unsigned int swift = 50);
 extern inline char caesar_cipher(char val, bool encrypt = true, unsigned int offset = 0);
 bool string_starts_with(string orig, string cmp);
 bool string_ends_with(string orig, string cmp);
