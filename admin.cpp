@@ -67,21 +67,7 @@ static void user_management() {
 			if (!del)
 				break;
 
-			// Replace the account data in pass.dat with empty characters
-			fstream pass_dat;
-			pass_dat.open("pass.dat", ios::in | ios::out);
-
-			// Move the pointer in front of the data to delete
-			// del here counts after the admin account, so it's (del), not (del - 1)
-			pass_dat.seekp(sizeof(account) * del);
-
-			// Create an empty character array
-			char empty[sizeof(account)] = "";
-
-			// Use it to wipe the data
-			pass_dat.write(empty, sizeof(account));
-
-			pass_dat.close();
+			account::remove_data(del + 1);
 
 			break;
 		}

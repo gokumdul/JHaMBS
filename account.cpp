@@ -140,6 +140,39 @@ int account::exists_in_pass_dat(string username, bool get, account *user) {
 
 	return 0;
 }
+void account::remove_data() const {
+	remove_data(this->username);
+}
+void account::remove_data(string username) {
+	remove_data(exists_in_pass_dat(username), username);
+}
+void account::remove_data(int index, string username) {
+	// Replace the account data in pass.dat with empty characters
+	fstream pass_dat;
+	pass_dat.open("pass.dat", ios::in | ios::out);
+
+	// Move the pointer in front of the data to delete
+	pass_dat.seekg(sizeof(account) * (index - 1));
+	pass_dat.seekp(sizeof(account) * (index - 1));
+
+	if (username.empty()) {
+		// Read first and obtain username
+		account user;
+		pass_dat.read(reinterpret_cast<char *>(&user), sizeof(account));
+		username = user.username;
+	}
+
+	// Create an empty character array
+	char empty[sizeof(account)] = "";
+
+	// Use it to wipe the data
+	pass_dat.write(empty, sizeof(account));
+	pass_dat.close();
+
+	// Wipe the seperate user data as well
+	username += ".dat";
+	remove(username.c_str());
+}
 void account::gc() {
 	ofstream tmp_dat;
 	tmp_dat.open("tmp_pass.dat");

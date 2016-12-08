@@ -34,6 +34,10 @@ public:
 	//     If get, return the account pointer as well.
 	// If not,  return 0.
 	static int exists_in_pass_dat(string username, bool get = false, account *user = nullptr);
+	// Removes the data in pass.dat
+	void remove_data() const;
+	static void remove_data(string username);
+	static void remove_data(int index, string username = "");
 	// Garbage collection : remove empty data from pass.dat
 	static void gc();
 };
