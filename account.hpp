@@ -9,8 +9,9 @@ private:
 	char password[10 + 1];
 	// Don't allow email to be more than 60 characters
 	char email[60 + 1];
-
 	bool admin;
+
+	void set_password(string password);
 
 public:
 	// Empty constructor for reinterpret_cast
@@ -23,7 +24,6 @@ public:
 	string get_email() const;
 	bool is_admin() const;
 	void set_admin(bool admin);
-	void set_password(string password);
 
 	// Asks the user for the email, if match, set new password
 	void pw_recovery();
