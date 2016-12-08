@@ -5,7 +5,7 @@ using namespace std;
 
 enum LOGIN_STATUS { LOGIN_FAILED, LOGIN_ADMIN, LOGIN_USER };
 
-// ++ From login.cpp
+// ++ From account.cpp
 LOGIN_STATUS login();
 void make_new_user_account(bool admin = false);
 extern fstream account_file;
