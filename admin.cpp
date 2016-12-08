@@ -73,7 +73,8 @@ static int show_user_list(bool ret, bool email) {
 	ifstream pass_dat;
 	int size = 0;
 
-	// TODO : Empty data within pass.dat cause issue when ret is true
+	// Trigger garbage collection in pass.dat to avoid number collision
+	account::gc();
 
 	pass_dat.open("pass.dat");
 	if (pass_dat.is_open()) {

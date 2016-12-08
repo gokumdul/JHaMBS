@@ -41,6 +41,8 @@ int main() {
 			find_password();
 			break;*/
 		case 4:
+			// Trigger garbage collection in pass.dat
+			account::gc();
 			return 0;
 		default:
 			cout << "Retry please" << endl;

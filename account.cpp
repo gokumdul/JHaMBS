@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <cstdio>
 #include "common.hpp"
 using namespace std;
 
@@ -108,6 +109,30 @@ int account::exists_in_pass_dat(string username, bool get, account *user) {
 		free(user);
 
 	return 0;
+}
+void account::gc() {
+	ofstream tmp_dat;
+	tmp_dat.open("tmp_pass.dat");
+
+	ifstream pass_dat;
+	pass_dat.open("pass.dat");
+
+	if (!pass_dat.is_open())
+		return;
+
+	// Declare an empty char array
+	char arr[sizeof(account)] = "";
+
+	while (pass_dat.read(arr, sizeof(account))) {
+		// strlen returns 0(false) when arr is empty
+		if (strlen(arr))
+			tmp_dat.write(arr, sizeof(account));
+	}
+
+	pass_dat.close();
+	tmp_dat.close();
+
+	rename("tmp_pass.dat", "pass.dat");
 }
 
 // account.dat file
