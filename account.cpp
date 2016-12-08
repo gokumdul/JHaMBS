@@ -7,6 +7,9 @@
 using namespace std;
 
 account::account(string username, string password, string email, bool is_admin) {
+	// account object is being newly created, initialize the members
+	retries = 0;
+
 	/*
 	 * Username : Store without encryption
 	 * Password : Store with Caesar's cipher on top of crc32 hash
@@ -37,9 +40,53 @@ account::account(string username, string password, string email, bool is_admin) 
 string account::get_username() const {
 	return string(username);
 }
-bool account::is_pw_match(string cmp) const {
-	return (to_string(calc_crc32(cmp.c_str())) ==
+bool account::is_pw_match(string cmp) {
+	bool match = (to_string(calc_crc32(cmp.c_str())) ==
 		caesar_cipher(password, username, false, 80));
+
+	if (!match) {
+		retries++;
+		save_to_pass_dat();
+	}
+
+	/*
+	 * We'd love to enforce security to all users, including admin,
+	 * but removing the "admin" account doesn't make sense.
+	 *
+	 * All other secondary admin accounts
+	 * (which has admin permissions but not named "admin") can be removed.
+	 */
+	if (!match && strcmp(username, "admin") && retries > 5) {
+		cerr << endl
+		     << "If password match failure happens 10 times," << endl
+		     << "the entire user data gets wiped!" << endl
+		     << "You have been warned!" << endl
+		     << endl;
+	}
+
+	if (!match && strcmp(username, "admin") && retries > 10) {
+		cerr << endl
+		     << "Too many attempts, wiping user data!" << endl
+		     << endl;
+		remove_data();
+	}
+
+	if (match) {
+		if (retries > 3) {
+			cout << endl
+			     << "This account was attempted to be logged in" << endl
+			     << retries << " times before with incorrect passwords!" << endl
+			     << endl
+			     << "If this wasn't you, we recommend you to change your password." << endl
+			     << endl;
+		}
+
+		// Login successful, reset retries
+		retries = 0;
+		save_to_pass_dat();
+	}
+
+	return match;
 }
 string account::get_email() const {
 	return caesar_cipher(email, username, false);

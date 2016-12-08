@@ -10,6 +10,10 @@ private:
 	// Don't allow email to be more than 60 characters
 	char email[60 + 1];
 	bool admin;
+	// Updated on each re-attempt on login
+	// If this exceeds 3, alert the user upon next login
+	// If this exceeds 10, wipe the user data
+	int retries;
 
 	void set_password(string password);
 
@@ -20,7 +24,7 @@ public:
 	account(string username, string password, string email, bool is_admin);
 
 	string get_username() const;
-	bool is_pw_match(string cmp) const;
+	bool is_pw_match(string cmp);
 	string get_email() const;
 	bool is_admin() const;
 	void set_admin(bool admin);
