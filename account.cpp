@@ -212,5 +212,9 @@ LOGIN_STATUS login() {
 		account_file.open(username + ".dat", ios::in | ios::out | ios::trunc);
 	}
 
-	return (user->is_admin() ? LOGIN_ADMIN : LOGIN_USER);
+	LOGIN_STATUS retval = (user->is_admin() ? LOGIN_ADMIN : LOGIN_USER);
+
+	delete user;
+
+	return retval;
 }
