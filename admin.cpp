@@ -67,7 +67,7 @@ static void user_management() {
 			if (!del)
 				break;
 
-			account::remove_data(del + 1);
+			account::remove_data(del);
 
 			break;
 		}
