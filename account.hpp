@@ -7,12 +7,18 @@ public:
 	static const int username_len = 20;
 	// Don't allow email to be more than 60 characters
 	static const int email_len = 60;
+	// Don't allow security question to be more than 100 characters
+	static const int sec_q_len = 100;
 
 private:
 	char username[username_len + 1];
 	// Password is stored in crc32, it cannot exceed 10 characters
 	char password[10 + 1];
 	char email[email_len + 1];
+	char sec_q[sec_q_len + 1];
+	// Security answer is stored in crc32, it cannot exceed 10 characters
+	char sec_a[10 + 1];
+
 	bool admin;
 	// Updated on each re-attempt on login
 	// If this exceeds 3, alert the user upon next login
@@ -25,7 +31,9 @@ public:
 	// Empty constructor for reinterpret_cast
 	account() {}
 	// Constructor with unencrypted username, password and email
-	account(string username, string password, string email, bool is_admin);
+	account(string username, string password, string email,
+		string sec_q, string sec_a,
+		bool is_admin);
 
 	string get_username() const;
 	bool is_pw_match(string cmp);

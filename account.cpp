@@ -6,7 +6,9 @@
 #include "common.hpp"
 using namespace std;
 
-account::account(string username, string password, string email, bool is_admin) {
+account::account(string username, string password, string email,
+	string sec_q, string sec_a,
+	bool is_admin) {
 	// account object is being newly created, initialize the members
 	retries = 0;
 
@@ -19,6 +21,8 @@ account::account(string username, string password, string email, bool is_admin) 
 	 *            and commonly-used domains are always used,
 	 *            so store email with 2-stage Caesar's cipher
 	 *            with the username as the offset for the 2nd round
+	 * Security question : Same as email
+	 * Security answer   : Same as password
 	 *
 	 * Seperator : space
 	 */
@@ -33,6 +37,18 @@ account::account(string username, string password, string email, bool is_admin) 
 
 	// Store email
 	strcpy(this->email, caesar_cipher(email.c_str(), username).c_str());
+
+	// Store security question
+	strcpy(this->sec_q, caesar_cipher(sec_q.c_str(), username).c_str());
+
+	// Store security answer
+	strcpy(this->sec_a,
+		caesar_cipher(to_string(calc_crc32(sec_a.c_str())),
+				username,
+				true,
+				80)
+			.c_str()
+		);
 
 	// Set admin
 	this->admin = is_admin;
@@ -125,6 +141,16 @@ void account::pw_recovery() {
 
 	if (email != get_email()) {
 		cerr << "Incorrect email address!" << endl;
+		return;
+	}
+
+	// Ask personal security question
+	string sec_a;
+	cout << caesar_cipher(sec_q, username, false) << " ";
+	getline(cin, sec_a);
+	if (to_string(calc_crc32(sec_a.c_str())) !=
+		caesar_cipher(this->sec_a, username, false, 80)) {
+		cerr << "Incorrect answer!" << endl;
 		return;
 	}
 
@@ -263,10 +289,11 @@ void make_new_user_account(bool admin) {
 	string username;
 	string password;
 	string user_email;
+	string sec_q;
+	string sec_a;
 
 	if (admin) {
 		username = "admin";
-		user_email = "null";
 	} else {
 		do {
 			cout << "Enter user name : ";
@@ -289,29 +316,40 @@ void make_new_user_account(bool admin) {
 	cout << "Enter " << username << "'s password : ";
 	getline(cin, password);
 
-	// Admin's email might be publicly available,
-	// do not allow password restoration if admin.
-	if (!admin) {
-		do {
-			cout << "Enter " << username << "'s Email : ";
-			getline(cin, user_email);
+	do {
+		cout << "Enter " << username << "'s Email : ";
+		getline(cin, user_email);
 
-			if (!account::valid_email(user_email)) {
-				cerr << "Invalid email address!" << endl;
-				continue;
-			}
-			if (user_email.size() > account::email_len) {
-				cerr << "Email must be shorter than "
-				     << account::email_len << " "
-				     << "characters!" << endl;
-				continue;
-			}
+		if (!account::valid_email(user_email)) {
+			cerr << "Invalid email address!" << endl;
+			continue;
+		}
+		if (user_email.size() > account::email_len) {
+			cerr << "Email must be shorter than "
+			     << account::email_len << " "
+			     << "characters!" << endl;
+			continue;
+		}
 
+		break;
+	} while(1);
+
+	do {
+		cout << "Enter your personal security question : ";
+		getline(cin, sec_q);
+
+		if (sec_q.size() <= account::sec_q_len)
 			break;
-		} while(1);
-	}
 
-	account new_account(username, password, user_email, admin);
+		cerr << "Security question must be shorter than "
+		     << account::sec_q_len << " "
+		     << "characters!" << endl;
+	} while(1);
+
+	cout << "Enter your personal security question's answer : ";
+	getline(cin, sec_a);
+
+	account new_account(username, password, user_email, sec_q, sec_a, admin);
 	new_account.save_to_pass_dat();
 }
 
@@ -388,11 +426,6 @@ void reset_password() {
 		cerr << "No such username!" << endl;
 		if (user)
 			delete user;
-		return;
-	}
-
-	if (user->is_admin()) {
-		cerr << "Administrator's password is not allowed to be recovered!" << endl;
 		return;
 	}
 
