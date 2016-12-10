@@ -6,10 +6,13 @@
 #include <iterator>
 #include <algorithm>
 #include "common.hpp"
-#include "movie.hpp"
 using namespace std;
 
 movie::movie(string dat_file) {
+	// From the file name : parse ID
+	id = stoi(dat_file.substr(dat_file.find("-") + 1, dat_file.find(".")));
+
+	// Open dat_file
 	ifstream movie_dat;
 	movie_dat.open(dat_file);
 
@@ -52,7 +55,9 @@ movie::movie(string dat_file) {
 	// Clean up
 	movie_dat.close();
 }
-
+int movie::get_id() const {
+	return id;
+}
 string movie::get_title() const {
 	return title;
 }
@@ -67,6 +72,13 @@ bool movie::is_3D() const {
 }
 
 void book_movie() {
+	select_movie();
+
+	// TODO : Actually book a movie
+	exit(0);
+}
+
+int select_movie() {
 	vector<string> movie_dats = listdir("movies", "movie-", ".dat");
 	vector<string> movie_titles;
 	vector<string>::iterator it_string;
@@ -86,7 +98,7 @@ void book_movie() {
 
 	int user_choice = print_menu("Movies now playing", movies_array, i);
 	if (user_choice == i)
-		return;
+		return 0;
 
 	ifstream movie_dat;
 	movie_dat.open("movies/" + *((it_string = movie_dats.begin()) + user_choice - 1));
@@ -102,6 +114,5 @@ void book_movie() {
 
 	print_menu("Movie details", strings, lines, false);
 
-	// TODO : Actually book a movie
-	exit(0);
+	return user_choice;
 }

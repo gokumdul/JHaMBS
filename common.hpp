@@ -1,7 +1,12 @@
+#ifndef __COMMON_HPP
+#define __COMMON_HPP
+
 #include <string>
 #include <fstream>
 #include <vector>
 #include "account.hpp"
+#include "movie.hpp"
+#include "hall.hpp"
 using namespace std;
 
 enum LOGIN_STATUS { LOGIN_FAILED, LOGIN_ADMIN, LOGIN_USER };
@@ -19,6 +24,13 @@ void admin_menu();
 
 // ++ From movie.cpp
 void book_movie();
+int select_movie();
+// --
+
+// ++ From hall.cpp
+void create_new_hall();
+void hall_add_movie_timetable(hall &hall_obj);
+void hall_remove_movie_timetable(hall &hall_obj, bool entirely = false);
 // --
 
 // ++ From utils.cpp
@@ -43,3 +55,5 @@ template<typename T>T* vtoa(vector<T> vec, int reserve = 0) {
 	return array;
 }
 // --
+
+#endif // __COMMON_HPP

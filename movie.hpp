@@ -1,8 +1,10 @@
 #include <string>
+#include "common.hpp"
 using namespace std;
 
 class movie {
 private:
+	int id; // Unique identifier
 	string title;
 	int runtime; // In minutes
 	bool IMAX;
@@ -10,6 +12,7 @@ private:
 
 public:
 	movie(string dat_file);
+	int get_id() const;
 	string get_title() const;
 	int get_runtime() const;
 	bool is_IMAX() const;
