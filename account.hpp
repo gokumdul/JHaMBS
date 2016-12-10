@@ -2,13 +2,17 @@
 using namespace std;
 
 class account {
-private:
+public:
 	// Don't allow username to be more than 20 characters
-	char username[20 + 1];
+	static const int username_len = 20;
+	// Don't allow email to be more than 60 characters
+	static const int email_len = 60;
+
+private:
+	char username[username_len + 1];
 	// Password is stored in crc32, it cannot exceed 10 characters
 	char password[10 + 1];
-	// Don't allow email to be more than 60 characters
-	char email[60 + 1];
+	char email[email_len + 1];
 	bool admin;
 	// Updated on each re-attempt on login
 	// If this exceeds 3, alert the user upon next login

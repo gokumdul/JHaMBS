@@ -268,8 +268,17 @@ void make_new_user_account(bool admin) {
 		username = "admin";
 		user_email = "null";
 	} else {
-		cout << "Enter user name : ";
-		getline(cin, username);
+		do {
+			cout << "Enter user name : ";
+			getline(cin, username);
+
+			if (username.size() <= account::username_len)
+				break;
+
+			cerr << "Username must be shorter than "
+			     << account::username_len << " "
+			     << "characters!" << endl;
+		} while(1);
 	}
 
 	if (account::exists_in_pass_dat(username)) {
@@ -287,10 +296,18 @@ void make_new_user_account(bool admin) {
 			cout << "Enter " << username << "'s Email : ";
 			getline(cin, user_email);
 
-			if (account::valid_email(user_email))
-				break;
+			if (!account::valid_email(user_email)) {
+				cerr << "Invalid email address!" << endl;
+				continue;
+			}
+			if (user_email.size() > account::email_len) {
+				cerr << "Email must be shorter than "
+				     << account::email_len << " "
+				     << "characters!" << endl;
+				continue;
+			}
 
-			cerr << "Invalid email address!" << endl;
+			break;
 		} while(1);
 	}
 
