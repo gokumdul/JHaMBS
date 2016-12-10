@@ -25,6 +25,7 @@ public:
 
 	string get_username() const;
 	bool is_pw_match(string cmp);
+	static bool valid_email(string email);
 	string get_email() const;
 	bool is_admin() const;
 	void set_admin(bool admin);

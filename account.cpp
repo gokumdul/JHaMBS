@@ -88,6 +88,17 @@ bool account::is_pw_match(string cmp) {
 
 	return match;
 }
+bool account::valid_email(string email) {
+	// Check for '@' inside the string
+	if (email.find("@") == string::npos)
+		return false;
+
+	// Check for '.' after the '@'
+	if (email.substr(email.find("@")).find(".") == string::npos)
+		return false;
+
+	return true;
+}
 string account::get_email() const {
 	return caesar_cipher(email, username, false);
 }
@@ -272,8 +283,15 @@ void make_new_user_account(bool admin) {
 	// Admin's email might be publicly available,
 	// do not allow password restoration if admin.
 	if (!admin) {
-		cout << "Enter " << username << "'s Email : ";
-		getline(cin, user_email);
+		do {
+			cout << "Enter " << username << "'s Email : ";
+			getline(cin, user_email);
+
+			if (account::valid_email(user_email))
+				break;
+
+			cerr << "Invalid email address!" << endl;
+		} while(1);
 	}
 
 	account new_account(username, password, user_email, admin);
