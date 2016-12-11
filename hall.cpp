@@ -172,13 +172,7 @@ void hall::reset_timetable() {
 void hall::save_to_hall_dat() const {
 	fstream hall_dat;
 	string hall_dat_name = "halls/hall-" + to_string(hall_number) + ".dat";
-	hall_dat.open(hall_dat_name, ios::in | ios::out);
-
-	if (!hall_dat.is_open()) {
-		// hall.dat does not exist
-		hall_dat.close();
-		hall_dat.open(hall_dat_name, ios::in | ios::out | ios::trunc);
-	}
+	hall_dat.open(hall_dat_name, ios::in | ios::out | ios::trunc);
 
 	hall_dat.write(reinterpret_cast<const char *>(this), sizeof(hall));
 	hall_dat.close();
