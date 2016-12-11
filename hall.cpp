@@ -207,6 +207,9 @@ void hall::set_available_seat(bool val, int start_hr, int start_mn, int x, int y
 	// Save changes
 	save_to_hall_dat();
 }
+bool hall::timetable_sanity_check(int movie_id, int hr, int mn) const {
+	return (timetable[60 * hr + mn] == movie_id);
+}
 bool hall::set_timetable(movie movie_obj, int hr, int mn) {
 	int id = movie_obj.get_id();
 	int runtime = movie_obj.get_runtime();

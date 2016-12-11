@@ -73,8 +73,19 @@ void customer::manage_book_data() {
 				if (tmp_4.size() == 1) tmp_4.insert(0, "0");
 				start_hr_vec.push_back(x);
 				start_mn_vec.push_back(y);
+
 				string final = "From " + tmp_1 + ":" + tmp_2 +
 						" to " + tmp_3 + ":" + tmp_4;
+
+				hall hall_tmp("halls/hall-" + to_string(booked_hall_id[x][y]) + ".dat");
+				if (!hall_tmp.timetable_sanity_check(booked_movie_id[x][y], x, y)) {
+					cerr << endl
+					     << final << endl
+					     << movie_obj.get_title() << " has been cancelled!" << endl;
+					should_clear = false;
+					continue;
+				}
+
 				to_prompt.push_back(false);
 				menu_vec.push_back(final);
 				to_prompt.push_back(true);

@@ -66,6 +66,8 @@ public:
 	// Search through all halls and list timetable for a movie
 	static void show_movie_timetable(int id, int &hall_id, int &start_hr, int &start_mn);
 	void set_available_seat(bool val, int start_hr, int start_mn, int x, int y);
+	// Check if the movie_id is still in hr:mn
+	bool timetable_sanity_check(int movie_id, int hr, int mn) const;
 	// Returns false if requested timetable is already taken
 	bool set_timetable(movie movie_obj, int hr, int mn);
 	// Remove index'th item from timetable
