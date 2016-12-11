@@ -85,7 +85,7 @@ static void schedule_management() {
 		}
 
 		// Show the control menu
-
+		should_clear = false;
 		switch (print_menu("Schedule management",
 				schedule_management_menu,
 				schedule_management_menu_size)) {
@@ -176,6 +176,8 @@ static void user_management() {
 			pass_dat.read(reinterpret_cast<char *>(&user), sizeof(account));
 			pass_dat.close();
 
+			cls();
+			should_clear = false;
 			cout << "Changing " << user.get_username()
 			     << " from " <<  (user.is_admin() ? "admin" : "regular user")
 			     << " to "   << (!user.is_admin() ? "admin" : "regular user")
@@ -238,6 +240,8 @@ static int show_user_list(bool ret, bool email) {
 	}
 
 	if (ret && size == 0) {
+		cls();
+		should_clear = false;
 		cerr << "No users to list!" << endl;
 		return 0;
 	}

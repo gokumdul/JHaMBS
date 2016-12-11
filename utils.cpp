@@ -137,6 +137,9 @@ int count_digits(int val) {
  */
 int print_menu(const string title, const string strings[], const int size,
 	const bool prompt, const vector<bool> to_prompt, const int width) {
+	// Clear the screen before printing menu
+	cls();
+
 	// Calculate space for center-aligning title
 	bool title_is_even = (title.size() % 2 == 0);
 	int title_left_margin  = width / 2 - title.size() / 2 - 1 - !title_is_even;
@@ -224,4 +227,17 @@ int print_menu(const string title, const string strings[], const int size,
 		}
 	}
 	return 0;
+}
+
+bool should_clear = true;
+void cls() {
+	if (should_clear) {
+#ifdef _WIN32
+		system("cls");
+#else
+		printf("\e[1;1H\e[2J");
+#endif
+	} else {
+		should_clear = true;
+	}
 }

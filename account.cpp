@@ -61,6 +61,8 @@ bool account::is_pw_match(string cmp) {
 		caesar_cipher(password, username, false, 80));
 
 	if (!match) {
+		cls();
+		should_clear = false;
 		retries++;
 		save_to_pass_dat();
 	}
@@ -140,6 +142,8 @@ void account::pw_recovery() {
 	getline(cin, email);
 
 	if (email != get_email()) {
+		cls();
+		should_clear = false;
 		cerr << "Incorrect email address!" << endl;
 		return;
 	}
@@ -150,6 +154,8 @@ void account::pw_recovery() {
 	getline(cin, sec_a);
 	if (to_string(calc_crc32(sec_a.c_str())) !=
 		caesar_cipher(this->sec_a, username, false, 80)) {
+		cls();
+		should_clear = false;
 		cerr << "Incorrect answer!" << endl;
 		return;
 	}
@@ -309,6 +315,8 @@ void make_new_user_account(bool admin) {
 	}
 
 	if (account::exists_in_pass_dat(username)) {
+		cls();
+		should_clear = false;
 		cerr << "Account already exists!" << endl;
 		return;
 	}
@@ -375,6 +383,8 @@ LOGIN_STATUS login() {
 
 	account *user = new account();
 	if (!account::exists_in_pass_dat(username, true, user)) {
+		cls();
+		should_clear = false;
 		cerr << "No such username!" << endl;
 		if (user)
 			delete user;
@@ -382,10 +392,14 @@ LOGIN_STATUS login() {
 	}
 
 	if (!user->is_pw_match(password)) {
+		cls();
+		should_clear = false;
 		cerr << "Wrong password!" << endl;
 		return LOGIN_FAILED;
 	}
 
+	cls();
+	should_clear = false;
 	cout << "Login successful!" << endl;
 
 	// account_file is a global, static variable
@@ -409,6 +423,8 @@ void reset_password() {
 
 	if (!pass_dat.is_open()) {
 		// pass.dat does not exist
+		cls();
+		should_clear = false;
 		cerr << "No user data available!" << endl;
 		return;
 	} else {
@@ -423,6 +439,8 @@ void reset_password() {
 
 	account *user = new account();
 	if (!account::exists_in_pass_dat(username, true, user)) {
+		cls();
+		should_clear = false;
 		cerr << "No such username!" << endl;
 		if (user)
 			delete user;

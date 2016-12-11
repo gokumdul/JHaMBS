@@ -44,9 +44,6 @@ int main() {
 			// Trigger garbage collection in pass.dat
 			account::gc();
 			return 0;
-		default:
-			cout << "Retry please" << endl;
-			break;
 		}
 	}
 

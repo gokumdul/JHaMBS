@@ -185,6 +185,9 @@ void hall::save_to_hall_dat() const {
 }
 
 void create_new_hall() {
+	// Clear the screen first
+	cls();
+
 	// Generate hall_number automatically following existing ones
 	int hall_number = 1;
 	vector<string> hall_dats = listdir("halls", "hall-", ".dat");

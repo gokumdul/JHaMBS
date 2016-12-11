@@ -55,6 +55,8 @@ template<typename T>T* vtoa(vector<T> vec, int reserve = 0) {
 
 	return array;
 }
+extern bool should_clear;
+void cls();
 // --
 
 #endif // __COMMON_HPP
