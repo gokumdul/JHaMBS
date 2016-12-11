@@ -114,6 +114,7 @@ int hall::show_all_timetable(bool prompt) const {
 		print_menu(menu_title, print_string, 1, false);
 	}
 
+	should_clear = false;
 	return retval;
 }
 void hall::set_available_seat(bool val, int index, int x, int y) {
