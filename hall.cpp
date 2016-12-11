@@ -82,12 +82,19 @@ int hall::show_all_timetable(bool prompt) const {
 				} else {
 					to_prompt.push_back(false);
 					print.push_back(" ");
-					to_prompt.push_back(false);
-					print.push_back(" ");
 				}
+				// Insert 0 at the beginning if it's single digit
+				string tmp_1 = to_string(x);
+				string tmp_2 = to_string(y);
+				string tmp_3 = to_string(tmp / 60);
+				string tmp_4 = to_string(tmp % 60);
+				if (tmp_1.size() == 1) tmp_1.insert(0, "0");
+				if (tmp_2.size() == 1) tmp_2.insert(0, "0");
+				if (tmp_3.size() == 1) tmp_3.insert(0, "0");
+				if (tmp_4.size() == 1) tmp_4.insert(0, "0");
 				to_prompt.push_back(false);
-				print.push_back("From " + to_string(x)        + ":" + to_string(y) +
-				                 " to " + to_string(tmp / 60) + ":" + to_string(tmp % 60));
+				print.push_back("From " + tmp_1 + ":" + tmp_2 +
+				                 " to " + tmp_3 + ":" + tmp_4);
 				// When passing to print_menu(), add number to the title only
 				to_prompt.push_back(true);
 				print.push_back(movie_obj.get_title());
