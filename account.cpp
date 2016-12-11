@@ -263,7 +263,7 @@ void account::remove_data(int index, string username) {
 	pass_dat.close();
 
 	// Wipe the seperate user data as well
-	username += ".dat";
+	username = "users/user-" + username + ".dat";
 	remove(username.c_str());
 }
 void account::gc() {

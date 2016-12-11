@@ -13,4 +13,5 @@ public:
 	customer() {};
 	customer(string username);
 	string get_username() const;
+	void save_to_user_dat() const;
 };
