@@ -13,14 +13,13 @@ static void user_management();
 
 void user_menu() {
 	while(1) {
-		string initial_user_menu[] = { "Book a movie", "View history", "Manage account", "Go back" };
+		string initial_user_menu[] = { "Book a movie", "Manage purchases", "Manage account", "Go back" };
 		switch (print_menu("User menu", initial_user_menu, sizeof(initial_user_menu) / sizeof(string))) {
 		case 1:
 			book_movie();
 			break;
 		case 2:
-			// view_history();
-			// TODO : implement
+			logged_in_session.manage_book_data();
 			break;
 		case 3:
 			user_management();

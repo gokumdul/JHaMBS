@@ -10,10 +10,12 @@ using namespace std;
 
 hall::hall(int hall_number, int price, HALL_TYPE screen_type) {
 	// hall object is being newly created, initialize the members
-	for (int x = 0; x < available_x; x++) {
-		for (int y = 0; y < available_y; y++) {
-			for (int z = 0; z < available_z; z++) {
-				available[x][y][z] = true;
+	for (int i = 0; i < timetable_x; i++) {
+		for (int j = 0; j < timetable_y; j++) {
+			for (int x = 0; x < available_x; x++) {
+				for (int y = 0; y < available_y; y++) {
+					available[i][j][x][y] = true;
+				}
 			}
 		}
 	}
@@ -45,32 +47,54 @@ int hall::get_price() const {
 HALL_TYPE hall::get_screen_type() const {
 	return screen_type;
 }
+string hall::get_screen_type_in_string() const {
+	switch (screen_type) {
+	case SCREEN_IMAX:
+		return "IMAX";
+	case SCREEN_3D:
+		return "3D";
+	case SCREEN_2D:
+	default:
+		return "2D";
+	}
+}
 int hall::get_x() const {
 	return (screen_type == SCREEN_IMAX ? 25 : 20);
 }
 int hall::get_y() const {
 	return (screen_type == SCREEN_IMAX ? 15 : 10);
 }
-int hall::get_available_seats(int index) const {
+int hall::get_available_seats(int start_hr, int start_mn) const {
 	int ret = 0;
 
 	for (int i = 0; i < get_x(); i++)
 		for (int j = 0; j < get_y(); j++)
-			if (!available[index][i][j])
+			if (available[start_hr][start_mn][i][j])
 				ret++;
 
 	return ret;
 }
-int hall::show_all_timetable(bool prompt) const {
+bool hall::check_available_seat(int start_hr, int start_mn, int x, int y) const {
+	return available[start_hr][start_mn][x][y];
+}
+int hall::show_all_timetable(bool prompt,
+	bool for_customers, int id, int total_offset,
+	vector<int> *hall_id_vec, vector<int> *start_hr_vec, vector<int> *start_mn_vec) const {
 	vector<string> print;
 	vector<bool> to_prompt;
 	int movie_id = 0; // Marker for the starting time of a movie
 	bool first = true; // First item on the list
 	int retval = 0;
+	int total = total_offset;
 
 	for (int x = 0; x < timetable_x; x++) {
 		for (int y = 0; y < timetable_y; y++) {
 			if (timetable[60 * x + y] && (movie_id != timetable[60 * x + y])) {
+				movie_id = timetable[60 * x + y];
+
+				if (for_customers && movie_id != id)
+					continue;
+
 				movie_id = timetable[60 * x + y];
 				movie movie_obj("movies/movie-" + to_string(movie_id) + ".dat");
 
@@ -92,17 +116,33 @@ int hall::show_all_timetable(bool prompt) const {
 				if (tmp_2.size() == 1) tmp_2.insert(0, "0");
 				if (tmp_3.size() == 1) tmp_3.insert(0, "0");
 				if (tmp_4.size() == 1) tmp_4.insert(0, "0");
-				to_prompt.push_back(false);
-				print.push_back("From " + tmp_1 + ":" + tmp_2 +
-				                 " to " + tmp_3 + ":" + tmp_4);
+				string final = "From " + tmp_1 + ":" + tmp_2 +
+				                " to " + tmp_3 + ":" + tmp_4;
+				if (for_customers) {
+					final.insert(0, to_string(++total) + ". ");
+					final += " (" + to_string(get_available_seats(x, y)) + "/" + to_string(get_x() * get_y()) + ")";
+				}
+				to_prompt.push_back(for_customers);
+				print.push_back(final);
 				// When passing to print_menu(), add number to the title only
-				to_prompt.push_back(true);
-				print.push_back(movie_obj.get_title());
+				to_prompt.push_back(!for_customers);
+				if (for_customers) {
+					hall_id_vec->push_back(get_hall_number());
+					start_hr_vec->push_back(x);
+					start_mn_vec->push_back(y);
+				}
+				if (!for_customers)
+					print.push_back(movie_obj.get_title());
 			}
 		}
 	}
 
-	string menu_title = "Hall " + to_string(get_hall_number()) + "'s timetable";
+	string menu_title = "Hall " + to_string(get_hall_number());
+	if (for_customers)
+		menu_title += "(" + get_screen_type_in_string() + ")";
+	menu_title += "'s timetable";
+	if (for_customers)
+		menu_title += " (Price : " + to_string(get_price()) + ")";
 	if (print.size()) {
 		string* print_strings = vtoa(print);
 		retval = print_menu(menu_title, print_strings, print.size(), prompt, to_prompt);
@@ -110,15 +150,59 @@ int hall::show_all_timetable(bool prompt) const {
 			retval = 0; // Go back
 		delete[] print_strings;
 	} else {
+		// Don't print empty hall when booking
+		if (for_customers)
+			return 0;
 		string print_string[] = { "No schedule!" };
 		print_menu(menu_title, print_string, 1, false);
 	}
 
 	should_clear = false;
-	return retval;
+	return for_customers ? total : retval;
 }
-void hall::set_available_seat(bool val, int index, int x, int y) {
-	available[index][x][y] = val;
+void hall::show_movie_timetable(int id, int &hall_id, int &start_hr, int &start_mn) {
+	// Print basic hall info first
+	vector<string> hall_dats = listdir("halls", "hall-", ".dat");
+	vector<string>::iterator it_string;
+
+	vector<hall> hall_vec;
+	vector<hall>::iterator it_hall;
+
+	for (it_string = hall_dats.begin(); it_string != hall_dats.end(); it_string++)
+		hall_vec.push_back(hall("halls/" + *it_string));
+
+	cls();
+
+	// Vectors for returning values properly
+	// e.g. hall_id_vec[user_choice] returns hall_id that user has booked
+	vector<int> hall_id_vec;
+	vector<int> start_hr_vec;
+	vector<int> start_mn_vec;
+	int total = 0;
+	for (it_hall = hall_vec.begin(); it_hall != hall_vec.end(); it_hall++) {
+		should_clear = false;
+		total += it_hall->show_all_timetable(false, true, id, total,
+				&hall_id_vec, &start_hr_vec, &start_mn_vec);
+	}
+
+	int user_choice;
+	do {
+		cout << "Please choose : ";
+		cin >> user_choice;
+
+		if (0 < user_choice && user_choice <= total)
+			break;
+
+		cerr << "Please enter a valid value!" << endl;
+	} while(1);
+
+	user_choice--; // Vector starts from 0
+	hall_id = hall_id_vec[user_choice];
+	start_hr = start_hr_vec[user_choice];
+	start_mn = start_mn_vec[user_choice];
+}
+void hall::set_available_seat(bool val, int start_hr, int start_mn, int x, int y) {
+	available[start_hr][start_mn][x][y] = val;
 
 	// Save changes
 	save_to_hall_dat();

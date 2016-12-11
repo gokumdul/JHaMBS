@@ -57,17 +57,7 @@ static void schedule_management() {
 
 			// Write screen type
 			tmp += " - ";
-			switch (it_hall->get_screen_type()) {
-			case SCREEN_2D:
-				tmp += "2D";
-				break;
-			case SCREEN_3D:
-				tmp += "3D";
-				break;
-			case SCREEN_IMAX:
-				tmp += "IMAX";
-				break;
-			}
+			tmp += it_hall->get_screen_type_in_string();
 
 			// Save to vector
 			hall_info.push_back(tmp);

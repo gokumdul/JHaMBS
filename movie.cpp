@@ -72,10 +72,35 @@ bool movie::is_3D() const {
 }
 
 void book_movie() {
-	select_movie();
+	int movie_id = select_movie();
+	if (!movie_id)
+		return;
 
-	// TODO : Actually book a movie
-	exit(0);
+	int hall_id;
+	int start_hr;
+	int start_mn;
+
+	hall::show_movie_timetable(movie_id, hall_id, start_hr, start_mn);
+
+	do {
+		string seat;
+		cout << "Please enter the desired seat(e.g. D5) : ";
+		// TODO : sanity check
+		cin >> seat;
+		int seat_x = seat[0] - 'A';
+		int seat_y = stoi(seat.substr(1));
+
+		hall tmp("halls/hall-" + to_string(hall_id) + ".dat");
+		if (tmp.check_available_seat(start_hr, start_mn, seat_x, seat_y)) {
+			tmp.set_available_seat(false, start_hr, start_mn, seat_x, seat_y);
+			break;
+		}
+
+		cerr << "Seat not available!" << endl;
+	} while(1);
+
+	// TODO : check if user's timetable doesn't overlap
+	logged_in_session.book(movie_id, hall_id, start_hr, start_mn);
 }
 
 int select_movie() {
@@ -113,6 +138,7 @@ int select_movie() {
 	movie_dat.close();
 
 	print_menu("Movie details", strings, lines, false);
+	should_clear = false;
 
 	return user_choice;
 }
