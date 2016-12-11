@@ -61,9 +61,12 @@ int hall::get_available_seats(int index) const {
 
 	return ret;
 }
-void hall::show_all_timetable() const {
+int hall::show_all_timetable(bool prompt) const {
 	vector<string> print;
+	vector<bool> to_prompt;
 	int movie_id = 0; // Marker for the starting time of a movie
+	bool first = true; // First item on the list
+	int retval = 0;
 
 	for (int x = 0; x < timetable_x; x++) {
 		for (int y = 0; y < timetable_y; y++) {
@@ -74,17 +77,20 @@ void hall::show_all_timetable() const {
 				int tmp = 60 * x + y;
 				tmp += movie_obj.get_runtime();
 
-				print.push_back(" ");
+				if (first) {
+					first = false;
+				} else {
+					to_prompt.push_back(false);
+					print.push_back(" ");
+					to_prompt.push_back(false);
+					print.push_back(" ");
+				}
+				to_prompt.push_back(false);
 				print.push_back("From " + to_string(x)        + ":" + to_string(y) +
 				                 " to " + to_string(tmp / 60) + ":" + to_string(tmp % 60));
+				// When passing to print_menu(), add number to the title only
+				to_prompt.push_back(true);
 				print.push_back(movie_obj.get_title());
-				print.push_back(" ");
-
-				/*
-				cout << "From " << x << ":" << y
-				     <<  " to " << tmp / 60 << ":" << tmp - (tmp / 60) << endl
-				     << movie_obj.get_title() << endl << endl;
-				*/
 			}
 		}
 	}
@@ -92,12 +98,16 @@ void hall::show_all_timetable() const {
 	string menu_title = "Hall " + to_string(get_hall_number()) + "'s timetable";
 	if (print.size()) {
 		string* print_strings = vtoa(print);
-		print_menu(menu_title, print_strings, print.size(), false);
+		retval = print_menu(menu_title, print_strings, print.size(), prompt, to_prompt);
+		if (retval == print.size())
+			retval = 0; // Go back
 		delete[] print_strings;
 	} else {
 		string print_string[] = { "No schedule!" };
 		print_menu(menu_title, print_string, 1, false);
 	}
+
+	return retval;
 }
 void hall::set_available_seat(bool val, int index, int x, int y) {
 	available[index][x][y] = val;
@@ -116,6 +126,29 @@ bool hall::set_timetable(movie movie_obj, int hr, int mn) {
 		timetable[i] = id;
 
 	return true;
+}
+void hall::remove_item_from_timetable(int index) {
+	int tmp = 0;
+
+	for (int x = 0; x < timetable_x; x++) {
+		for (int y = 0; y < timetable_y; y++) {
+			if (timetable[60 * x + y]) {
+				if (tmp == index) {
+					// Mark it free
+					timetable[60 * x + y] = 0;
+				} else {
+					tmp++;
+				}
+			}
+		}
+	}
+}
+void hall::reset_timetable() {
+	for (int x = 0; x < timetable_x; x++) {
+		for (int y = 0; y < timetable_y; y++) {
+			timetable[60 * x + y] = 0;
+		}
+	}
 }
 void hall::save_to_hall_dat() const {
 	fstream hall_dat;
@@ -233,5 +266,17 @@ void hall_add_movie_timetable(hall &hall_obj) {
 }
 
 void hall_remove_movie_timetable(hall &hall_obj, bool entirely) {
-	// TODO : implement
+	if (entirely) {
+		hall_obj.reset_timetable();
+		return;
+	}
+
+	int user_choice;
+	user_choice = hall_obj.show_all_timetable(true);
+
+	if (!user_choice)
+		return; // Go back
+
+	// index starts from 0, user_choice starts from 1
+	hall_obj.remove_item_from_timetable(user_choice - 1);
 }
