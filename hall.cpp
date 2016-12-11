@@ -229,6 +229,9 @@ void hall_add_movie_timetable(hall &hall_obj) {
 	movie* movie_obj = nullptr;
 	do {
 		movie_choice = select_movie();
+		if (!movie_choice)
+			return; // "Go back"
+
 		movie_obj = new movie("movies/movie-" + to_string(movie_choice) + ".dat");
 
 		if (hall_obj.get_screen_type() == SCREEN_3D && !movie_obj->is_3D()) {
