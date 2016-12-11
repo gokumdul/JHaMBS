@@ -149,7 +149,7 @@ static void schedule_management_sub() {
 			break;
 		case 5:
 			remove(hall_dat_name.c_str());
-			break;
+			return;
 		case 6:
 			return;
 		}
