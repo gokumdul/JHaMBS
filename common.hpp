@@ -41,7 +41,8 @@ bool string_starts_with(string orig, string cmp);
 bool string_ends_with(string orig, string cmp);
 vector<string> listdir(string path, string starts_with, string ends_with);
 int count_digits(int val);
-int print_menu(const string title, const string strings[], const int size, const bool prompt = true, const int width = 60);
+int print_menu(const string title, const string strings[], const int size,
+	const bool prompt = true, const vector<bool> to_prompt = vector<bool>(), const int width = 60);
 // template functions cannot be linked together, so put it in header
 // T vector to T array
 template<typename T>T* vtoa(vector<T> vec, int reserve = 0) {

@@ -128,10 +128,15 @@ int count_digits(int val) {
  * string menu[] = { "Login", "New account", "Find password", "Quit" };
  * print_menu("Start", menu, sizeof(menu) / sizeof(string));
  *
- * The 4th argument width is optional, default is 60.
- * The return value is the user's choice.
+ * The 4th argument prompt is set to true by default.
+ *     If false is passed, print_menu() won't ask the user to choose.
+ * The 5th argument to_prompt is optional,
+ *     which selectively adds number to the elements in strings[].
+ * The 6th argument width is optional, default is 60.
+ * The return value is the user's choice, if prompt is true.
  */
-int print_menu(const string title, const string strings[], const int size, const bool prompt, const int width) {
+int print_menu(const string title, const string strings[], const int size,
+	const bool prompt, const vector<bool> to_prompt, const int width) {
 	// Calculate space for center-aligning title
 	bool title_is_even = (title.size() % 2 == 0);
 	int title_left_margin  = width / 2 - title.size() / 2 - 1 - !title_is_even;
@@ -172,8 +177,15 @@ int print_menu(const string title, const string strings[], const int size, const
 		cout << "│";
 		for (j = 0; j < width / 2 - largest / 2 - 1; j++)
 			cout << ' ';
-		if (prompt)
-			cout << ++number << ". ";
+		// If to_prompt is not empty, use it to selectively filter
+		if (prompt) {
+			if (to_prompt.empty() || to_prompt[i]) {
+				cout << ++number << ". ";
+			} else {
+				for (int j = 0; j < count_digits(size) + 2; j++)
+					cout << ' ';
+			}
+		}
 		cout << strings[i];
 		for (k = 0; k < width - 2 - j - (prompt ? 3 : 0) - strings[i].size(); k++)
 			cout << ' ';
