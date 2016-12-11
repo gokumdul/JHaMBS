@@ -26,7 +26,7 @@ int main() {
 				admin_menu();
 				break;
 			case LOGIN_USER:
-				book_movie();
+				user_menu();
 				break;
 			case LOGIN_FAILED:
 			default:

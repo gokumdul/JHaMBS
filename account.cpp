@@ -120,6 +120,9 @@ bool account::valid_email(string email) {
 string account::get_email() const {
 	return caesar_cipher(email, username, false);
 }
+void account::set_email(string email) {
+	email.copy(this->email, email.size());
+}
 bool account::is_admin() const {
 	return admin;
 }
@@ -288,8 +291,8 @@ void account::gc() {
 	rename("tmp_pass.dat", "pass.dat");
 }
 
-// account.dat file
-fstream account_file;
+// Currently logged-in session
+customer logged_in_session;
 
 void make_new_user_account(bool admin) {
 	string username;
@@ -402,22 +405,19 @@ LOGIN_STATUS login() {
 	should_clear = false;
 	cout << "Login successful!" << endl;
 
-	// account_file is a global, static variable
-	account_file.open(username + ".dat", ios::in | ios::out);
-	if (!account_file.is_open()) {
-		// username.dat does not exist
-		account_file.open(username + ".dat", ios::in | ios::out | ios::trunc);
+	if (user->is_admin()) {
+		delete user;
+		return LOGIN_ADMIN;
 	}
 
-	LOGIN_STATUS retval = (user->is_admin() ? LOGIN_ADMIN : LOGIN_USER);
-
+	// logged_in_session is a global, static variable
+	logged_in_session = customer(user->get_username());
 	delete user;
-
-	return retval;
+	return LOGIN_USER;
 }
 
 // Real password recovery is done within the class(account::pw_recovery())
-void reset_password() {
+void reset_password(string username) {
 	ifstream pass_dat;
 	pass_dat.open("pass.dat");
 
@@ -431,11 +431,12 @@ void reset_password() {
 		pass_dat.close();
 	}
 
-	string username;
 	string email;
 
-	cout << "Username : ";
-	getline(cin, username);
+	if (username.empty()) {
+		cout << "Username : ";
+		getline(cin, username);
+	}
 
 	account *user = new account();
 	if (!account::exists_in_pass_dat(username, true, user)) {
@@ -448,5 +449,57 @@ void reset_password() {
 	}
 
 	user->pw_recovery();
+	delete user;
+}
+
+void reset_email(string username) {
+	ifstream pass_dat;
+	pass_dat.open("pass.dat");
+
+	if (!pass_dat.is_open()) {
+		// pass.dat does not exist
+		cls();
+		should_clear = false;
+		cerr << "No user data available!" << endl;
+		return;
+	} else {
+		pass_dat.close();
+	}
+
+	if (username.empty()) {
+		cout << "Username : ";
+		getline(cin, username);
+	}
+
+	account *user = new account();
+	if (!account::exists_in_pass_dat(username, true, user)) {
+		cls();
+		should_clear = false;
+		cerr << "No such username!" << endl;
+		if (user)
+			delete user;
+		return;
+	}
+
+	string user_email;
+	do {
+		cout << "Enter " << username << "'s Email : ";
+		getline(cin, user_email);
+
+		if (!account::valid_email(user_email)) {
+			cerr << "Invalid email address!" << endl;
+			continue;
+		}
+		if (user_email.size() > account::email_len) {
+			cerr << "Email must be shorter than "
+			     << account::email_len << " "
+			     << "characters!" << endl;
+			continue;
+		}
+
+		break;
+	} while(1);
+
+	user->set_email(user_email);
 	delete user;
 }

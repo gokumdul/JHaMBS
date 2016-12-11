@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include "account.hpp"
+#include "customer.hpp"
 #include "movie.hpp"
 #include "hall.hpp"
 using namespace std;
@@ -14,12 +15,17 @@ enum LOGIN_STATUS { LOGIN_FAILED, LOGIN_ADMIN, LOGIN_USER };
 // ++ From account.cpp
 LOGIN_STATUS login();
 void make_new_user_account(bool admin = false);
-void reset_password();
-extern fstream account_file;
+void reset_password(string username = "");
+void reset_email(string username = "");
+extern customer logged_in_session;
 // --
 
 // ++ From admin.cpp
 void admin_menu();
+// --
+
+// ++ From user.cpp
+void user_menu();
 // --
 
 // ++ From movie.cpp
