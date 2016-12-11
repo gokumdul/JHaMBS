@@ -76,7 +76,7 @@ static void schedule_management() {
 		if (!hall_info.empty()) {
 			string* hall_info_menu = vtoa(hall_info);
 			print_menu("Hall information", hall_info_menu, hall_info.size(), false);
-			delete hall_info_menu;
+			delete[] hall_info_menu;
 		} else {
 			// Move "Go back" to the upper choice
 			schedule_management_menu_size--;
