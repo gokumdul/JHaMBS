@@ -111,6 +111,9 @@ int hall::show_all_timetable(bool prompt) const {
 }
 void hall::set_available_seat(bool val, int index, int x, int y) {
 	available[index][x][y] = val;
+
+	// Save changes
+	save_to_hall_dat();
 }
 bool hall::set_timetable(movie movie_obj, int hr, int mn) {
 	int id = movie_obj.get_id();
@@ -124,6 +127,9 @@ bool hall::set_timetable(movie movie_obj, int hr, int mn) {
 	// Check passed, now update the timetable
 	for (int i = 60 * hr + mn; i <= (60 * hr + mn + runtime); i++)
 		timetable[i] = id;
+
+	// Save changes
+	save_to_hall_dat();
 
 	return true;
 }
@@ -142,6 +148,9 @@ void hall::remove_item_from_timetable(int index) {
 			}
 		}
 	}
+
+	// Save changes
+	save_to_hall_dat();
 }
 void hall::reset_timetable() {
 	for (int x = 0; x < timetable_x; x++) {
@@ -149,6 +158,9 @@ void hall::reset_timetable() {
 			timetable[60 * x + y] = 0;
 		}
 	}
+
+	// Save changes
+	save_to_hall_dat();
 }
 void hall::save_to_hall_dat() const {
 	fstream hall_dat;
