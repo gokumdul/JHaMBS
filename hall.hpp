@@ -58,6 +58,7 @@ public:
 	int get_available_seats(int index) const;
 	void show_all_timetable() const;
 	void set_available_seat(bool val, int index, int x, int y);
-	void set_timetable(movie movie_obj, int hr, int mn);
+	// Returns false if requested timetable is already taken
+	bool set_timetable(movie movie_obj, int hr, int mn);
 	void save_to_hall_dat() const;
 };

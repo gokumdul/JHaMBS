@@ -102,13 +102,20 @@ void hall::show_all_timetable() const {
 void hall::set_available_seat(bool val, int index, int x, int y) {
 	available[index][x][y] = val;
 }
-void hall::set_timetable(movie movie_obj, int hr, int mn) {
+bool hall::set_timetable(movie movie_obj, int hr, int mn) {
 	int id = movie_obj.get_id();
 	int runtime = movie_obj.get_runtime();
 
-	for (int i = 60 * hr + mn; i <= (60 * hr + mn + runtime); i++) {
+	// Check if the requested timetable is taken first
+	for (int i = 60 * hr + mn; i <= (60 * hr + mn + runtime); i++)
+		if (timetable[i])
+			return false;
+
+	// Check passed, now update the timetable
+	for (int i = 60 * hr + mn; i <= (60 * hr + mn + runtime); i++)
 		timetable[i] = id;
-	}
+
+	return true;
 }
 void hall::save_to_hall_dat() const {
 	fstream hall_dat;
@@ -185,35 +192,41 @@ void hall_add_movie_timetable(hall &hall_obj) {
 		break;
 	} while(1);
 
-	// Get the movie starting time
-	int hr;
 	do {
-		cout << endl
-		     << "Please enter which hour of the day" << endl
-		     << "you want this movie to be played at : ";
-		cin >> hr;
+		// Get the movie starting time
+		int hr;
+		do {
+			cout << endl
+			     << "Please enter which hour of the day" << endl
+			     << "you want this movie to be played at : ";
+			cin >> hr;
 
-		if (0 <= hr && hr <= 23)
-			break;
+			if (0 <= hr && hr <= 23)
+				break;
 
-		cerr << "Hour has to be in (0 <= hr <= 23) range!" << endl;
+			cerr << "Hour has to be in (0 <= hr <= 23) range!" << endl;
+		} while(1);
+
+		int mn;
+		do {
+			cout << endl
+			     << "Please enter which minute" << endl
+			     << "you want this movie to be played at : ";
+			cin >> mn;
+
+			if (0 <= mn && mn <= 59)
+				break;
+
+			cerr << "Minute has to be in (0 <= mn <= 59) range!" << endl;
+		} while(1);
+
+		// Mark hall::timetable
+		if (!hall_obj.set_timetable(*movie_obj, hr, mn)) {
+			cerr << "Timetable is overlapping!" << endl
+			     << "Please choose another time!" << endl;
+		}
+		break;
 	} while(1);
-
-	int mn;
-	do {
-		cout << endl
-		     << "Please enter which minute" << endl
-		     << "you want this movie to be played at : ";
-		cin >> mn;
-
-		if (0 <= mn && mn <= 59)
-			break;
-
-		cerr << "Minute has to be in (0 <= mn <= 59) range!" << endl;
-	} while(1);
-
-	// Mark hall::timetable
-	hall_obj.set_timetable(*movie_obj, hr, mn);
 
 	// Free pointer
 	delete movie_obj;
